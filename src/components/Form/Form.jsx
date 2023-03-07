@@ -1,28 +1,22 @@
 import css from './Form.module.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact } from 'redux/contactsSlice';
+import { addContact } from 'redux/contactsOperations';
 import { Formik, Form, Field } from 'formik';
-import { getContacts } from 'redux/selectors';
-
-const initialValues = {
-  name: '',
-  number: '',
-};
+import { getIsLoading } from 'redux/selectors';
 
 const AddForm = () => {
   const dispatch = useDispatch();
- 
-  const contacts = useSelector(getContacts);
+  const isLoading = useSelector(getIsLoading);
+  const initialValues = {
+    name: '',
+    phone: '',
+  };
 
-  const handleFormSubmit = ({ name, number }, { resetForm }) => {
-    if (
-      contacts.find(option => option.name.toLowerCase() === name.toLowerCase())
-    ) {
-      return alert(`${name} is already in contacts`);
-    }
-    dispatch(addContact(name, number));
+  const handleFormSubmit = (contact, { resetForm }) => {
+    dispatch(addContact(contact));
     resetForm();
   };
+
   return (
     <Formik initialValues={initialValues} onSubmit={handleFormSubmit}>
       <Form className={css.phonebook}>
@@ -32,9 +26,9 @@ const AddForm = () => {
         </label>
         <label>
           <p>Number</p>
-          <Field type="tel" name="number" />
+          <Field type="tel" name="phone" />
         </label>
-        <button className={css.button} type="submit">
+        <button className={css.button} type="submit" disabled={isLoading}>
           Add contact
         </button>
       </Form>
